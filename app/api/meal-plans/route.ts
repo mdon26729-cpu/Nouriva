@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { requireUser, apiError } from "@/lib/server-auth";
-import { requirePremium } from "@/lib/entitlements";
 import type { Food, MealPlan, MealType, PlannedMeal, PlannedMealItemType, Recipe } from "@/types";
 import { seedData } from "@/seed/data";
 
@@ -41,7 +40,6 @@ function nutrition(item: Food | Recipe, servings: number) {
 export async function GET(request: Request) {
   try {
     const { userId, db } = await requireUser();
-    await requirePremium(db, userId);
     const weekStart = new URL(request.url).searchParams.get("weekStart");
     if (!validWeek(weekStart)) return NextResponse.json({ message: "Use a Monday date in YYYY-MM-DD format." }, { status: 400 });
     const snapshot = await db.collection("users").doc(userId).collection("mealPlans").doc(weekStart).get();
@@ -56,7 +54,6 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { userId, db } = await requireUser();
-    await requirePremium(db, userId);
     const body = await request.json() as { weekStart?: unknown; meals?: unknown };
     if (!validWeek(body.weekStart) || !Array.isArray(body.meals) || body.meals.length > 28) {
       return NextResponse.json({ message: "A Monday week start and valid meal list are required." }, { status: 400 });
@@ -114,7 +111,6 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { userId, db } = await requireUser();
-    await requirePremium(db, userId);
     const params = new URL(request.url).searchParams;
     const weekStart = params.get("weekStart");
     const mealId = params.get("mealId");

@@ -9,7 +9,7 @@ import { colors, styles } from "@/src/theme";
 
 export default function Index() {
   const { isLoaded, isSignedIn, getToken } = useAuth();
-  const [destination, setDestination] = useState<"/onboarding" | "/(tabs)" | "/pricing" | null>(null);
+  const [destination, setDestination] = useState<"/onboarding" | "/(tabs)" | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const profileRequestStarted = useRef(false);
   const getTokenRef = useRef(getToken);
@@ -24,10 +24,8 @@ export default function Index() {
       setProfileLoading(true);
       try {
         const token = await getTokenRef.current();
-        const profile = await apiRequest<{ completedOnboarding?: boolean; entitlement?: { subscriptionStatus?: string } }>("/api/profile", { token });
-        if (!cancelled) setDestination(profile.completedOnboarding
-          ? profile.entitlement?.subscriptionStatus === "expired" || profile.entitlement?.subscriptionStatus === "cancelled" ? "/pricing" : "/(tabs)"
-          : "/onboarding");
+        const profile = await apiRequest<{ completedOnboarding?: boolean }>("/api/profile", { token });
+        if (!cancelled) setDestination(profile.completedOnboarding ? "/(tabs)" : "/onboarding");
       } catch (error) {
         if (!cancelled) {
           console.warn("Profile bootstrap failed:", error);

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUser, apiError } from "@/lib/server-auth";
 import { seedData } from "@/seed/data";
-import { requirePremium } from "@/lib/entitlements";
 import type { Exercise, Workout } from "@/types";
 import { workoutCategories } from "@/seed/data";
 
@@ -10,7 +9,6 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const { userId, db } = await requireUser();
-    const entitlement = await requirePremium(db, userId);
     const params = new URL(request.url).searchParams;
     const type = params.get("type");
     const exercises = (seedData.exercises as Exercise[]).filter((item) => !type || item.category.toLowerCase() === type.toLowerCase() || item.goals.some((goal) => goal.toLowerCase() === type.toLowerCase()));
@@ -39,6 +37,6 @@ export async function GET(request: Request) {
       const beginnerOrder = Number(beginnerProfile && b.difficulty === "beginner") - Number(beginnerProfile && a.difficulty === "beginner");
       return beginnerOrder || (homeProfile ? Number(a.equipment.length > 0) - Number(b.equipment.length > 0) : 0);
     });
-    return NextResponse.json({ exercises: prioritizedExercises, workouts, weeklyPlan, completedDates, workoutCategories, filterOptions: { difficulties: ["beginner", "intermediate", "advanced"], muscleGroups: Array.from(new Set(prioritizedExercises.flatMap((item) => item.muscleGroup.split(", ")))), equipment: Array.from(new Set(prioritizedExercises.flatMap((item) => item.equipment))) }, entitlement, profile: { activityLevel: profile.activityLevel, fitnessLevel: profile.fitnessLevel, workoutPreference: profile.workoutPreference, equipmentPreference: profile.equipmentPreference } });
+    return NextResponse.json({ exercises: prioritizedExercises, workouts, weeklyPlan, completedDates, workoutCategories, filterOptions: { difficulties: ["beginner", "intermediate", "advanced"], muscleGroups: Array.from(new Set(prioritizedExercises.flatMap((item) => item.muscleGroup.split(", ")))), equipment: Array.from(new Set(prioritizedExercises.flatMap((item) => item.equipment))) }, profile: { activityLevel: profile.activityLevel, fitnessLevel: profile.fitnessLevel, workoutPreference: profile.workoutPreference, equipmentPreference: profile.equipmentPreference } });
   } catch (error) { const result = apiError(error); return NextResponse.json({ message: result.message }, { status: result.status }); }
 }

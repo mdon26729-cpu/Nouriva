@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { requireUser, apiError } from "@/lib/server-auth";
 import { seedData } from "@/seed/data";
-import { getEntitlement } from "@/lib/entitlements";
 
 export async function GET() {
   try {
-    const { userId, db } = await requireUser({ allowExpired: true });
+    const { userId, db } = await requireUser();
     const snapshot = await db.collection("users").doc(userId).get();
     const profile = snapshot.exists ? snapshot.data() : { completedOnboarding: false };
-    return NextResponse.json({ ...profile, entitlement: await getEntitlement(db, userId) });
+    return NextResponse.json(profile);
   } catch (error) {
     const result = apiError(error);
     return NextResponse.json({ message: result.message }, { status: result.status });
@@ -17,7 +16,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { userId, db } = await requireUser({ allowExpired: true });
+    const { userId, db } = await requireUser();
     const existingProfile = await db.collection("users").doc(userId).get();
     const body = await request.json();
     const age = Number(body.age);

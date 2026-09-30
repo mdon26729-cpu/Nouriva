@@ -1,0 +1,21 @@
+{
+  "/page": "app/page.js",
+  "/sign-in/[[...sign-in]]/page": "app/sign-in/[[...sign-in]]/page.js",
+  "/api/profile/route": "app/api/profile/route.js",
+  "/api/logs/route": "app/api/logs/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/workouts/route": "app/api/workouts/route.js",
+  "/api/foods/route": "app/api/foods/route.js",
+  "/api/grocery/route": "app/api/grocery/route.js",
+  "/api/reports/route": "app/api/reports/route.js",
+  "/(app)/dashboard/page": "app/(app)/dashboard/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/(app)/workouts/page": "app/(app)/workouts/page.js",
+  "/(app)/coach/page": "app/(app)/coach/page.js",
+  "/(app)/foods/page": "app/(app)/foods/page.js",
+  "/(app)/planner/page": "app/(app)/planner/page.js",
+  "/(app)/progress/page": "app/(app)/progress/page.js",
+  "/(app)/log/page": "app/(app)/log/page.js",
+  "/(app)/grocery/page": "app/(app)/grocery/page.js",
+  "/(app)/reports/page": "app/(app)/reports/page.js"
+}

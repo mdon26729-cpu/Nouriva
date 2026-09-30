@@ -1,10 +1,35 @@
 apply plugin: 'com.android.application'
 
+def releaseKeystorePropertiesFile = rootProject.file('keystore.properties')
+def releaseKeystoreProperties = new Properties()
+if (releaseKeystorePropertiesFile.exists()) {
+    releaseKeystorePropertiesFile.withInputStream { releaseKeystoreProperties.load(it) }
+}
+
+def releaseKeystoreRequiredProperties = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword']
+def releaseKeystoreMissingProperties = releaseKeystoreRequiredProperties.findAll {
+    !releaseKeystoreProperties.getProperty(it)?.trim()
+}
+def releaseKeystoreFile = releaseKeystoreProperties.getProperty('storeFile')?.trim()
+def releaseKeystoreConfigured = releaseKeystoreMissingProperties.isEmpty() &&
+    releaseKeystoreFile &&
+    rootProject.file(releaseKeystoreFile).isFile()
+
 android {
-    namespace = "com.example.app"
+    namespace = "com.nouriva.app"
     compileSdk = rootProject.ext.compileSdkVersion
+    signingConfigs {
+        if (releaseKeystoreConfigured) {
+            releaseUpload {
+                storeFile rootProject.file(releaseKeystoreFile)
+                storePassword releaseKeystoreProperties.getProperty('storePassword')
+                keyAlias releaseKeystoreProperties.getProperty('keyAlias')
+                keyPassword releaseKeystoreProperties.getProperty('keyPassword')
+            }
+        }
+    }
     defaultConfig {
-        applicationId "com.example.app"
+        applicationId "com.nouriva.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -18,6 +43,9 @@ android {
     }
     buildTypes {
         release {
+            if (releaseKeystoreConfigured) {
+                signingConfig signingConfigs.releaseUpload
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -43,6 +71,24 @@ dependencies {
 }
 
 apply from: 'capacitor.build.gradle'
+
+def validateReleaseSigning = tasks.register('validateReleaseSigning') {
+    doLast {
+        if (!releaseKeystoreConfigured) {
+            def message = 'Release signing is not configured. Create android/keystore.properties with storeFile, storePassword, keyAlias, and keyPassword.'
+            if (!releaseKeystoreMissingProperties.isEmpty()) {
+                message += " Missing properties: ${releaseKeystoreMissingProperties.join(', ')}."
+            } else {
+                message += " Keystore file not found: ${releaseKeystoreFile}."
+            }
+            throw new GradleException(message)
+        }
+    }
+}
+
+tasks.matching { it.name in ['bundleRelease', 'assembleRelease'] }.configureEach {
+    dependsOn validateReleaseSigning
+}
 
 try {
     def servicesJSON = file('google-services.json')

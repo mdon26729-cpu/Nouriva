@@ -1,9 +1,13 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
-  appName: 'nouriva',
-  webDir: 'public'
+  appId: "com.nouriva.app",
+  appName: "Nouriva",
+  webDir: "capacitor-web",
+  server: {
+    url: "https://nouriva-sigma.vercel.app",
+    cleartext: false,
+  },
 };
 
 export default config;

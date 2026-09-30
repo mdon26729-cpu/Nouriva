@@ -20,8 +20,15 @@ const mealOrder = ["breakfast", "lunch", "dinner", "snack"];
 const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 function getGreetingPeriod(): "Morning" | "Afternoon" | "Evening" {
-  const hour = new Date().getHours();
-  if (hour < 5 || hour >= 17) return "Evening";
+  const hourPart = new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Karachi",
+  }).formatToParts(new Date()).find((part) => part.type === "hour");
+  if (!hourPart) throw new Error("Unable to determine the current hour in Asia/Karachi.");
+
+  const hour = Number(hourPart.value);
+  if (hour >= 17) return "Evening";
   if (hour < 12) return "Morning";
   return "Afternoon";
 }

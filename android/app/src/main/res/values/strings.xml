@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">nouriva</string>
-    <string name="title_activity_main">nouriva</string>
-    <string name="package_name">com.example.app</string>
-    <string name="custom_url_scheme">com.example.app</string>
+    <string name="app_name">Nouriva</string>
+    <string name="title_activity_main">Nouriva</string>
+    <string name="package_name">com.nouriva.app</string>
+    <string name="custom_url_scheme">com.nouriva.app</string>
 </resources>

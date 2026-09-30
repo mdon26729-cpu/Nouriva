@@ -13,7 +13,7 @@ const links = [
   ["Grocery list", "/grocery"],
   ["Reports", "/reports"],
   ["AI coach", "/(tabs)/coach"],
-  ["Go further (Explore Nouriva plans)", "/pricing"],
+  ["Subscriptions — Coming Soon", "/pricing"],
   ["Preferences", "/onboarding"],
   ["Your account", "/settings"],
 ] as const;
